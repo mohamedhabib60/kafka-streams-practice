@@ -7,7 +7,10 @@ This project defines a Kafka Streams topology to process product data.
 
 The topology reads from a source topic (`bo-product`), filters products with a stock less than 10, converts them to `RiskProduct` objects, and writes the result to a sink topic (`product-risk`).
 
-## How to Run
+## Testing
+
+### Unit Tests
+Use `ProductTopologyTest` to validate the topology using `TopologyTestDriver`.
 
 ### Using Docker Compose
 The required Kafka infrastructure can be started using `docker-compose.yml` located in the `resources` folder.
@@ -17,14 +20,8 @@ The required Kafka infrastructure can be started using `docker-compose.yml` loca
     ```sh
     docker-compose up
     ```
-
 ### Start the Application
 Run the main class (`KafkaStreamApplication`) to start the Kafka Streams application.
-
-## Testing
-
-### Unit Tests
-Use `ProductTopologyTest` to validate the topology using `TopologyTestDriver`.
 
 ### Manual Testing
 Produce messages to the `bo-product` topic:
@@ -77,3 +74,43 @@ Produce a sample `purchase` event using Kafka Console Producer:
 kafka-console-producer.sh --broker-list localhost:9092 --topic user-events --property "parse.key=true" --property "key.separator=:"
 > user1:{"userId":"user1", "eventType":"purchase", "cardId":"1234-5678-9012"}
 ```
+
+# Kafka Streams Product Topology with KTable , example 3 (checkout to the branch ktable-operations)
+This project defines a Kafka Streams topology to process product data.
+
+## Overview
+
+The topology reads from a source topic (`bo-product`), filters products with a stock less than 10 using KTable,
+converts them to `RiskProduct` objects, and writes the result to a sink topic (`product-risk`). Within interval of 1 second , 
+only the last event will be sent to the sink topic for the same key.
+
+## Testing
+
+### Unit Tests
+Use `ProductTopologyTest` to validate the topology using `TopologyTestDriver`.
+
+### Using Docker Compose
+The required Kafka infrastructure can be started using `docker-compose.yml` located in the `resources` folder.
+
+- Navigate to the `resources` folder and run:
+
+    ```sh
+    docker-compose up
+    ```
+
+### Manual Testing
+Produce messages to the `bo-product` topic:
+
+```sh
+kafka-console-producer.sh --broker-list localhost:9092 --topic bo-product --property "parse.key=true" --property "key.separator=:"
+key1:{"id":"1","name":"ProductB","stock":100}
+key1:{"id":"1","name":"ProductA","stock":5}
+key1:{"id":"1","name":"ProductA","stock":3}
+```
+### Start the Application
+Run the main class (`KafkaStreamApplication`) to start the Kafka Streams application.
+
+
+
+
+
